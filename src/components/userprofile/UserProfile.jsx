@@ -16,6 +16,8 @@ export default function UserProfile() {
   const [userId, setUserId] = useState('')
 
 
+
+  // firestore에 정보 가져오기
   useEffect(() => {
     const auth = getAuth();
     const loginClear = onAuthStateChanged(auth, async (user) => {
@@ -41,6 +43,8 @@ export default function UserProfile() {
     }
   }, [])
 
+  // firestore에 정보를 제출
+
   const submit = async (e) => {
     e.preventDefault();
     if(!userId) return;
@@ -58,6 +62,8 @@ export default function UserProfile() {
   };
 
   const navigate = useNavigate();
+
+  // 로그아웃 구현
   const logout = async () => {
     const auth = getAuth();
     try {

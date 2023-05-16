@@ -12,6 +12,7 @@ export default function KcalPage() {
   const [kcal, setKcal] = useState(null);
   const [recommendedKcal, setRecommendedKcal] = useState(null);
 
+  // 로그인 시 firestore에 저장되어있는 내 정보 가져오기
   useEffect(() => {
     const fetchData = async () => {
       if (isLoggedIn && user) {
@@ -33,7 +34,7 @@ export default function KcalPage() {
   }, [isLoggedIn, user]);
 
 
-
+  // 기초 대사량과 권장 칼로리 계산 함수
   const calculateKcal = () => {
     let baseKcal = 0;
 

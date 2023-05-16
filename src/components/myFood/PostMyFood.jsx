@@ -17,6 +17,7 @@ export default function PostMyFood() {
   const navigate = useNavigate();
   const db = getFirestore(app);
 
+  // 유저 정보 가져오기
   useEffect(() => {
     const auth = getAuth();
     const loginClear = onAuthStateChanged(auth, async (user) => {
@@ -39,6 +40,8 @@ export default function PostMyFood() {
     };
   }, []);
 
+  
+  // fireStorage 이미지 저장
   const uploadImage = async (image) => {
     const storage = getStorage(app);
     const uniqueFileName = `${new Date().getTime()}-${image.name}`;
@@ -48,6 +51,8 @@ export default function PostMyFood() {
     return imageUrl;
   };
 
+
+  // 게시물 작성 시 firestore에 myfood로 저장
   const handleSubmit = async (e) => {
     e.preventDefault();
 

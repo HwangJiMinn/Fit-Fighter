@@ -6,17 +6,17 @@ export default function FoodPage() {
   const [searchResult, setSearchResult] = useState([])
   const [isLoading, setIsLoading] = useState(false)
   
-
+  // chat gpt api 가져오기
   const gpt = async (e) => {
       const response = await fetch("https://api.openai.com/v1/chat/completions", {
           method: "POST",
           headers: {
-              Authorization: `Bearer ${import.meta.env.VITE_CHATGPTAPI}`,
+              Authorization: `Bearer ${import.meta.env.VITE_CHATGPTAPI}`,// github에 올리기 위해 env로 내 api 감추기
               "Content-Type": "application/json",
           },
           body: JSON.stringify({
               model: "gpt-3.5-turbo",
-              messages: [{ role: "user", content: `"${e}}" 탄수화물, 단백질, 지방, 열량 알려줘` }],
+              messages: [{ role: "user", content: `"${e}}" 탄수화물, 단백질, 지방, 열량 알려줘` }], // 음식 이름만 검색해도 뒤에 내용은 자동으로 검색
           }),
       });
 
@@ -67,6 +67,7 @@ export default function FoodPage() {
             검색
           </button>
         </form>
+        {/* 로딩 시 애니메이션 구현 */}
         {isLoading && (
           <div className="flex justify-center items-center my-4">
             <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-blue-500"></div>

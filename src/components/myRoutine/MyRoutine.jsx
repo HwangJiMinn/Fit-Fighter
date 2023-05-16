@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import InfiniteScroll from 'react-infinite-scroll-component';
-import { collection, query, orderBy, limit, startAfter, where, doc  } from 'firebase/firestore';
+import { collection, query, orderBy, limit, startAfter, where, doc, writeBatch  } from 'firebase/firestore';
 import { getFirestore, getDocs, deleteDoc  } from 'firebase/firestore';
 import { app } from '../../../firebaseconfig';
 import { updateDoc, arrayUnion, arrayRemove } from 'firebase/firestore';
@@ -19,6 +19,8 @@ export default function MyRoutine() {
 
   const db = getFirestore(app);
 
+
+  // 이메일이 firebase에 있는 이메일과 firestore에 있는 이메일과 일치하는지 확인 후 사용자의 닉네임을 가져옴
   const getPostUser = async (email) => {
     const usersRef = collection(db, 'users');
     const userQuery = query(usersRef, where('email', '==', email));
@@ -33,9 +35,11 @@ export default function MyRoutine() {
     }
   };
 
+
+  // firestore에 저장되어있는 게시물을 가져오기
   const fetchPosts = async () => {
     const postRef = collection(db, 'posts');
-    let postQuery = query(postRef, orderBy('createdAt', 'desc'), limit(7));
+    let postQuery = query(postRef, orderBy('createdAt', 'desc'), limit(7)); // 7개씩 가져오기
   
     if (lastDoc) {
       postQuery = query(postRef, orderBy('createdAt', 'desc'), startAfter(lastDoc), limit(7));
@@ -76,12 +80,12 @@ export default function MyRoutine() {
   }, []);
 
   
-
+  // 게시물 작성 페이지로 이동
   const creatPost = () => {
     nav('/postroutine')
   }
 
-  
+  // 현재 로그인 되어있는 유저 정보 확인(좋아요 중복 및 수정 삭제 기능 구현을 위함)
   const auth = getAuth(app);
   onAuthStateChanged(auth, (user) => {
     if (user) {
@@ -89,6 +93,8 @@ export default function MyRoutine() {
     }
   });
 
+
+  // 좋아요 버튼 구현(한 계정당 하나의 좋아요만 누를 수 있음)
   const toggleLike = async (post) => {
     const postRef = doc(db, 'posts', post.id);
     const likedByCurrentUser = post.likedBy.includes(currentUserEmail);
@@ -116,6 +122,8 @@ export default function MyRoutine() {
     });
   };
 
+
+  // 댓글 작성 구현
   const addComment = async (postId, commentText) => {
     const commentData = {
       postId,
@@ -139,6 +147,7 @@ export default function MyRoutine() {
     });
   };
 
+  // 댓글을 firestore에서 가져오기
   const fetchComments = async (postId) => {
     const commentsRef = collection(db, 'posts', postId, "comments");
     const commentsQuery = query(
@@ -159,17 +168,33 @@ export default function MyRoutine() {
     return comments;
   };
 
+
+  // 게시물 삭제 구현
   const deletePost = async (postId) => {
-    if(window.confirm("이 게시물을 삭제하시겠습니까?")){
-      const postRef = doc(db, 'posts', postId);
-      await deleteDoc(postRef);
+    if (window.confirm("이 게시물을 삭제하시겠습니까?")) {
+      try {
+        const postRef = doc(db, "posts", postId);
+        const commentsRef = collection(db, "posts", postId, "comments");
   
-      setPosts(posts.filter((post) => post.id !== postId));
+        const commentsSnapshot = await getDocs(commentsRef);
+        const batch = writeBatch(db);
+        commentsSnapshot.docs.forEach((doc) => {
+          batch.delete(doc.ref);
+        });
+  
+        batch.delete(postRef);
+  
+        await batch.commit();
+  
+        setPosts(posts.filter((post) => post.id !== postId));
+      } catch (e) {
+        console.error("게시물 삭제 실패:", e);
+      }
     }
   };
 
   
-
+  // 댓글 삭제 구현
   const deleteComment = async (commentId, postId) => {
     const commentRef = doc(db, 'posts', postId, "comments", commentId);
     await deleteDoc(commentRef);
@@ -197,7 +222,7 @@ export default function MyRoutine() {
       >
         게시물 작성
       </button>
-      <InfiniteScroll
+      <InfiniteScroll // 무한스크롤 구현 
         dataLength={posts.length}
         next={fetchMorePosts}
         hasMore={morePost}

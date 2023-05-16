@@ -2,7 +2,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 
 const CommunityCard = ({ image, text, navigateTo }) => {
-  const navigate = useNavigate();
+  const navigate = useNavigate(); // 각 커뮤니티 사진 및 설명 랜더링
 
   const handleClick = () => {
     navigate(navigateTo);
@@ -16,7 +16,7 @@ const CommunityCard = ({ image, text, navigateTo }) => {
       <img
         src={image}
         alt={text}
-        className="w-72 h-72 object-cover items-center"
+        className="w-72 h-72 object-cover items-center "
       ></img>
       <span className="text-black text-2xl font-bold mt-5">{text}</span>
     </div>

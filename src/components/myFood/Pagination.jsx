@@ -1,6 +1,8 @@
 import React from 'react';
 
 const Pagination = ({ currentPage, changePage, hasMorePosts }) => {
+
+  // 페이지네이션 구현
   return (
     <div className="flex justify-center">
       {currentPage > 1 && (

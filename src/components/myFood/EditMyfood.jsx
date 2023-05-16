@@ -5,7 +5,6 @@ import {
   doc,
   getDoc,
   updateDoc,
-  deleteDoc,
 } from "firebase/firestore";
 import {
   getStorage,
@@ -30,6 +29,7 @@ export default function EditMyfood() {
   const navigate = useNavigate();
   const db = getFirestore(app);
 
+  // 게시물의 데이터 가져오기
   useEffect(() => {
     const fetchPost = async () => {
       try {
@@ -49,6 +49,7 @@ export default function EditMyfood() {
 
     fetchPost();
 
+    // 유저 이름과 이메일 firestore에서 가져오기
     const auth = getAuth();
     const loginClear = onAuthStateChanged(auth, async (user) => {
       if (user) {
@@ -68,6 +69,7 @@ export default function EditMyfood() {
     };
   }, [postId]);
 
+  // 이미지를 firestorage에 저장
   const uploadImage = async (image) => {
     const storage = getStorage(app);
     const uniqueFileName = `${new Date().getTime()}-${image.name}`;
@@ -77,12 +79,15 @@ export default function EditMyfood() {
     return imageUrl;
   };
 
+  // 이미지 삭제
   const deleteImage = async (imageUrl) => {
     const storage = getStorage(app);
     const imageRef = ref(storage, imageUrl);
     await deleteObject(imageRef);
   };
 
+
+  // 게시물 수정 구현
   const handleSubmit = async (e) => {
     e.preventDefault();
 

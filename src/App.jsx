@@ -17,6 +17,7 @@ import MyFood from './components/myFood/MyFood';
 import PostMyFood from './components/myFood/PostMyFood';
 import MyFoodPage from './components/myFood/MyFoodPage';
 import EditMyfood from './components/myFood/EditMyfood';
+import Footer from './components/footer/Footer';
 
 function App() {
   return (
@@ -40,6 +41,7 @@ function App() {
             <Route path="/myfoodpage/:postId" element={<MyFoodPage />} />
             <Route path="/editmyfood/:postId" element={<EditMyfood />} />
           </Routes>
+          <Footer/>
       </AuthProvider>   
     </BrowserRouter>
   )

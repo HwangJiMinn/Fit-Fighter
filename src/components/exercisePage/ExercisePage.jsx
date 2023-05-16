@@ -17,6 +17,7 @@ export default function ExercisePage() {
   const [exercise, setExercise] = useState([])
   const [weight, setWeight] = useState(0)
 
+  // 유저 정보 가져오기 (몸무게)
   useEffect(() => {
     const auth = getAuth();
     const loginClear = onAuthStateChanged(auth, async (user) => {
@@ -35,6 +36,8 @@ export default function ExercisePage() {
     };
   }, []);
   
+
+  // 내가 만든 데이터베이스 가져오기
   useEffect(() => {
     axios.get("../../../public/db.json").then((data) => {
       setExercise(data.data.exercise);
@@ -47,7 +50,7 @@ export default function ExercisePage() {
 
   return (
     <div className="container mx-auto p-4">
-      <Swiper
+      <Swiper // swiper로 각 운동 정보 넘기기
         spaceBetween={50}
         slidesPerView={1}
         navigation

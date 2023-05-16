@@ -10,6 +10,8 @@ export default function signUp() {
     const [password, setPassword] = useState('');
     const [passwordConfirm, setPasswordConfirm] = useState('');
 
+
+    // 회원가입 구현
     const submit = (e) => {
         e.preventDefault();
         if(password !== passwordConfirm) {
@@ -19,7 +21,6 @@ export default function signUp() {
         const auth = getAuth(app);
         createUserWithEmailAndPassword(auth, email, password)
             .then((userCredential) => {
-            // Signed in
             const user = userCredential.user;
             alert("회원가입이 되었습니다.")
         })
@@ -29,6 +30,8 @@ export default function signUp() {
             alert(errorMessage)
         });
     }
+
+
     return (
         <div className="flex justify-center items-center mt-20">
           <div className="w-full max-w-md">

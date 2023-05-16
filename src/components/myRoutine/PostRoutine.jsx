@@ -18,6 +18,8 @@ export default function PostRoutine() {
 
   const db = getFirestore(app);
 
+
+  // useState에 firestore에서 사용자 이름과 이메일 가져오기
   useEffect(() => {
     const auth = getAuth();
     const loginClear = onAuthStateChanged(auth, async (user) => {
@@ -39,7 +41,7 @@ export default function PostRoutine() {
   }, []);
 
   
-
+  // 업로드 할 이미지를 firestorage에 저장
   const uploadImage = async (image) => {
     const storage = getStorage(app);
     const uniqueFileName = `${new Date().getTime()}-${image.name}`;
@@ -49,7 +51,7 @@ export default function PostRoutine() {
     return imageUrl;
   };
 
-
+  // 게시물을 firestore에 저장
   const handleSubmit = async (e) => {
     e.preventDefault();
 

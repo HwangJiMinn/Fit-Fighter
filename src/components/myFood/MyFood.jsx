@@ -5,12 +5,11 @@ import {
   collection,
   query,
   orderBy,
-  limit,
   getDocs,
-  startAfter,
   deleteDoc,
   where,
   doc,
+  writeBatch
 } from "firebase/firestore";
 import { app } from "../../../firebaseconfig";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
@@ -34,6 +33,8 @@ export default function MyFood() {
   const nav = useNavigate();
   const db = getFirestore(app);
 
+
+  // 게시물 가져오기
   useEffect(() => {
     const auth = getAuth(app);
     onAuthStateChanged(auth, (user) => {
@@ -44,30 +45,48 @@ export default function MyFood() {
     fetchPosts();
   }, [currentPage, sortOption]);
 
+
+  // 페이지 검색 기능 구현
   const fetchPosts = async () => {
-    let myFoodQuery;
+    let myFoodQueryByTitle;
+    let myFoodQueryByAuthor;
+  
     if (searchTerm === "") {
-      myFoodQuery = query(
+      myFoodQueryByTitle = query(
+        collection(db, "myfood"),
+        orderBy(sortOption, "desc")
+      );
+      myFoodQueryByAuthor = query(
         collection(db, "myfood"),
         orderBy(sortOption, "desc")
       );
     } else {
-      myFoodQuery = query(
+      myFoodQueryByTitle = query(
         collection(db, "myfood"),
         where("title", "==", searchTerm),
         orderBy(sortOption, "desc")
       );
+      myFoodQueryByAuthor = query(
+        collection(db, "myfood"),
+        where("user", "==", searchTerm),
+        orderBy(sortOption, "desc")
+      );
     }
-    const myFoodSnap = await getDocs(myFoodQuery);
-
-    if (myFoodSnap.empty) {
+  
+    const myFoodSnapByTitle = await getDocs(myFoodQueryByTitle);
+    const myFoodSnapByAuthor = await getDocs(myFoodQueryByAuthor);
+  
+    if (myFoodSnapByTitle.empty && myFoodSnapByAuthor.empty) {
       setHasMorePosts(false);
       return;
     }
-
-    setLastPost(myFoodSnap.docs[myFoodSnap.docs.length - 1]);
+  
+    setLastPost(myFoodSnapByTitle.docs[myFoodSnapByTitle.docs.length - 1]);
     setMyFoodPosts(
-      myFoodSnap.docs.map((doc) => ({ id: doc.id, ...doc.data() }))
+      [
+        ...myFoodSnapByTitle.docs.map((doc) => ({ id: doc.id, ...doc.data() })),
+        ...myFoodSnapByAuthor.docs.map((doc) => ({ id: doc.id, ...doc.data() })),
+      ].filter((v,i,a)=>a.findIndex(t=>(t.id === v.id))===i) // remove duplicates
     );
   };
 
@@ -91,6 +110,8 @@ export default function MyFood() {
     nav(`/myfoodpage/${postId}`);
   };
 
+
+  // 커뮤니티에 게시물 렌더링
   const renderContent = () => {
     const start = (currentPage - 1) * maxContent;
     const end = Math.min(currentPage * maxContent, myFoodPosts.length);
@@ -135,11 +156,24 @@ export default function MyFood() {
     ));
   };
 
+
+  // 게시물 삭제 구현
   const deletePost = async (postId) => {
     if (window.confirm("이 게시물을 삭제하시겠습니까?")) {
       try {
         const postRef = doc(db, "myfood", postId);
-        await deleteDoc(postRef);
+        const commentsRef = collection(db, "myfood", postId, "comments");
+  
+        const commentsSnapshot = await getDocs(commentsRef);
+        const batch = writeBatch(db);
+        commentsSnapshot.docs.forEach((doc) => {
+          batch.delete(doc.ref);
+        });
+  
+        batch.delete(postRef);
+  
+        await batch.commit();
+  
         setMyFoodPosts(myFoodPosts.filter((post) => post.id !== postId));
       } catch (e) {
         console.error("게시물 삭제 실패:", e);
@@ -147,6 +181,7 @@ export default function MyFood() {
     }
   };
 
+  // 페이지네이션 버튼 구현
   const renderButtons = () => {
     const start = Math.max(1, currentPage - Math.floor(maxButton / 2));
     const end = Math.min(maxPage, start + maxButton - 1);

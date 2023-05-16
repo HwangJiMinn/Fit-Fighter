@@ -13,6 +13,7 @@ import {
   updateDoc,
   arrayRemove,
   arrayUnion,
+  writeBatch,
 } from "firebase/firestore";
 import { app } from "../../../firebaseconfig";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
@@ -26,7 +27,8 @@ export default function MyFoodPage() {
   const [user, setUser] = useState(null);
   const [userName, setUserName] = useState("");
   const [liked, setLiked] = useState(false);
-  
+
+  // 추천버튼 구현
   useEffect(() => {
     if (user && post && (post.likedBy || []).includes(user.email)) {
       setLiked(true);
@@ -40,6 +42,7 @@ export default function MyFoodPage() {
   const db = getFirestore(app);
   const auth = getAuth();
 
+  // 로그인 상태 확인
   useEffect(() => {
     const auth = getAuth();
     const loginClear = onAuthStateChanged(auth, async (user) => {
@@ -59,6 +62,7 @@ export default function MyFoodPage() {
     };
   }, []);
 
+  // firestore에서 게시글 가져오기
   useEffect(() => {
     fetchPost();
     fetchComments();
@@ -88,13 +92,27 @@ export default function MyFoodPage() {
     }
   };
 
+  // edit페이지로 이동
   const handleEditPost = () => {
     navigate(`/editmyfood/${postId}`);
   };
 
+  // 게시글 삭제 구현
   const handleDeletePost = async () => {
     if (window.confirm("이 게시물을 삭제하시겠습니까?")) {
       try {
+        // 해당 게시글의 모든 댓글을 삭제합니다.
+        const commentsQuery = query(
+          collection(db, "myfood", postId, "comments")
+        );
+        const commentsSnapshot = await getDocs(commentsQuery);
+        const batch = writeBatch(db);
+        commentsSnapshot.docs.forEach((doc) => {
+          batch.delete(doc.ref);
+        });
+        await batch.commit();
+
+        // 게시글을 삭제합니다.
         await deleteDoc(doc(db, "myfood", postId));
         navigate("/myfood");
       } catch (error) {
@@ -103,6 +121,7 @@ export default function MyFoodPage() {
     }
   };
 
+  // 댓글을 firestore에 저장
   const fetchComments = async () => {
     try {
       const commentsQuery = query(
@@ -120,6 +139,7 @@ export default function MyFoodPage() {
     }
   };
 
+  // 댓글 랜더링
   const handleCommentSubmit = async (e) => {
     e.preventDefault();
     if (!user) {
@@ -141,6 +161,7 @@ export default function MyFoodPage() {
     }
   };
 
+  // 댓글 삭제
   const handleCommentDelete = async (commentId) => {
     try {
       await deleteDoc(doc(db, "myfood", postId, "comments", commentId));
@@ -154,8 +175,7 @@ export default function MyFoodPage() {
     return <div>로딩중...</div>;
   }
 
-
-
+  // 추천버튼 구현
   const handleLike = async () => {
     if (!user) {
       alert("로그인이 필요합니다.");
@@ -186,7 +206,7 @@ export default function MyFoodPage() {
     <div className="container mx-auto p-4">
       <div className="flex flex-wrap justify-between mb-4">
         <div className="w-full md:w-1/2">
-          <h1 className="text-3xl">{post.title}</h1>
+          <h1 className="text-3xl font-bold">{post.title}</h1>
         </div>
         <div className="w-full md:w-1/2 text-right md:text-right">
           <div>작성자: {post.user}</div>
@@ -220,7 +240,7 @@ export default function MyFoodPage() {
         />
       </div>
       <div className="w-full text-center">
-        <h2 className="text-2xl mb-2">재료</h2>
+        <h2 className="text-2xl mb-2 font-bold">재료</h2>
         <p
           className="border-2 border-gray-300 p-4 rounded-md mb-4 whitespace-pre-wrap mx-auto"
           style={{ maxWidth: "700px" }}
@@ -229,7 +249,7 @@ export default function MyFoodPage() {
         </p>
       </div>
       <div className="w-full text-center">
-        <h2 className="text-2xl mb-2">레시피</h2>
+        <h2 className="text-2xl mb-2 font-bold">레시피</h2>
         <p
           className="border-2 border-gray-300 p-4 rounded-md mb-4 whitespace-pre-wrap mx-auto"
           style={{ maxWidth: "700px" }}
@@ -268,7 +288,7 @@ export default function MyFoodPage() {
           {comments.map((comment) => (
             <div
               key={comment.id}
-              className="border-b border-gray-300 mb-4 pb-4"
+              className="border-b border-gray-300 mb-4 pb-4 mt-5"
             >
               <p className="mb-2">{comment.content}</p>
               <div className="text-sm text-gray-600">

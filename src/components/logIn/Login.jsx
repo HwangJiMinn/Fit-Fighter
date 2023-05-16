@@ -11,6 +11,8 @@ export default function Login() {
     const [password, setPassword] = useState('');
     const userprofile = useNavigate();
 
+
+    // firebase에 계정이 있는지 확인
     const submit = (e) => {
         e.preventDefault();
 
@@ -27,6 +29,7 @@ export default function Login() {
             });
     }
 
+    // 구글 로그인 구현
     const googleSignIn = async () => {
         const auth = getAuth(app);
         const provider = new GoogleAuthProvider();

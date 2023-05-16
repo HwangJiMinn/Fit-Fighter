@@ -12,15 +12,19 @@
   "dependencies": {
     "@react-native-firebase/firestore": "^17.4.3",
     "axios": "^1.4.0",
+    "bootstrap": "^5.2.3",
     "dotenv": "^16.0.3",
     "firebase": "^9.0.0",
     "font-awesome": "^4.7.0",
     "react": "^18.2.0",
+    "react-bootstrap": "^2.7.4",
     "react-dom": "^18.2.0",
+    "react-icons": "^4.8.0",
     "react-infinite-scroll-component": "^6.1.0",
     "react-responsive-carousel": "^3.2.23",
     "react-router-dom": "^6.11.0",
-    "swiper": "^9.2.4"
+    "swiper": "^9.2.4",
+    "tw-elements": "^1.0.0-beta2"
   },
   "devDependencies": {
     "@types/react": "^18.0.28",
