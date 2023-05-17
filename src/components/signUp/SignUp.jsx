@@ -1,8 +1,10 @@
 import React from 'react'
 import { app } from "../../../firebaseconfig";
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import {  doc, setDoc } from 'firebase/firestore'
 import { useState } from 'react';
 import { Link } from "react-router-dom";
+import { db } from '../../../firebaseconfig'
 
 
 export default function signUp() {
@@ -11,25 +13,28 @@ export default function signUp() {
     const [passwordConfirm, setPasswordConfirm] = useState('');
 
 
+
     // 회원가입 구현
     const submit = (e) => {
-        e.preventDefault();
-        if(password !== passwordConfirm) {
-            alert('비밀번호가 일치하지 않습니다.');
-            return;
-        }
-        const auth = getAuth(app);
-        createUserWithEmailAndPassword(auth, email, password)
-            .then((userCredential) => {
-            const user = userCredential.user;
-            alert("회원가입이 되었습니다.")
-        })
-        .catch((error) => {
-            const errorCode = error.code;
-            const errorMessage = error.message;
-            alert(errorMessage)
-        });
-    }
+      e.preventDefault();
+      if(password !== passwordConfirm) {
+          alert('비밀번호가 일치하지 않습니다.');
+          return;
+      }
+      const auth = getAuth(app);
+      createUserWithEmailAndPassword(auth, email, password)
+          .then(async (userCredential) => {
+          const user = userCredential.user;
+          const userDocRef = doc(db, 'users', user.uid);
+          await setDoc(userDocRef, { email: user.email });
+          alert("회원가입이 되었습니다.")
+      })
+      .catch((error) => {
+          const errorCode = error.code;
+          const errorMessage = error.message;
+          alert(errorMessage)
+      });
+  }
 
 
     return (

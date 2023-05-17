@@ -6,7 +6,7 @@ function Footer() {
     <footer className="text-gray-700 align-center mt-24 mb-24 flex flex-col items-center">
       <div className="text-3xl font-bold mb-2 flex items-center" >
         <img
-          src="../../../public/로고.png"
+          src="/로고.png"
           alt="Fit Fighter"
           className="w-10 h-10 mr-2"
         />

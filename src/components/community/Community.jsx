@@ -28,12 +28,12 @@ export default function Community() {
     <div className="container mx-auto p-4">
       <div className="grid grid-cols-2 gap-4 ">
         <CommunityCard
-          image="../../../public/루틴.jpg"
+          image="/루틴.jpg"
           text="오늘의 루틴!"
           navigateTo="/myroutine"
         />
         <CommunityCard
-          image="../../../public/요리.jpg"
+          image="/요리.jpg"
           text="나만의 식단 레시피"
           navigateTo="/myfood"
         />

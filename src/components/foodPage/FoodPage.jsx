@@ -11,7 +11,7 @@ export default function FoodPage() {
       const response = await fetch("https://api.openai.com/v1/chat/completions", {
           method: "POST",
           headers: {
-              Authorization: `Bearer ${import.meta.env.VITE_CHATGPTAPI}`,// github에 올리기 위해 env로 내 api 감추기
+              Authorization: `Bearer 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`,// github에 올리기 위해 env로 내 api 감추기
               "Content-Type": "application/json",
           },
           body: JSON.stringify({

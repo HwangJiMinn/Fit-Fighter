@@ -18,7 +18,7 @@ const Navigation = () => {
             className="text-3xl font-bold text-red-800 flex items-center"
           >
             <img
-              src="../../../public/로고.png"
+              src="/로고.png"
               alt="Fit Fighter"
               className="w-20 h-20 mr-2"
             />
