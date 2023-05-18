@@ -27,6 +27,5 @@ firebase : https://high-ace-321205.web.app/
 
 또 나만의 식단을 다른 사람들과 공유해보세요!
 
-#Noition 링크
-https://www.notion.so/Fit-Fighter-a6705a0f08a5458ca96910d4255ebcbf
+Noition 링크 : https://www.notion.so/Fit-Fighter-a6705a0f08a5458ca96910d4255ebcbf
 
