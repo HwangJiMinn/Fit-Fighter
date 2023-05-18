@@ -20,9 +20,13 @@ firebase : https://high-ace-321205.web.app/
 <img src="https://img.shields.io/badge/firebase-darkyellow?style=for-the-badge&logo=firebase&logoColor=white">
 
 # 프로젝트 소개
+
 혼자서 운동하고 정보를 얻기 힘들지 않으신가요?
 
 나의 기초대사량과 권장칼로리를 알아보고 음식의 성분을 조사하면서 사람들과 소통을 통해 나의 운동일지를 만들어보세요. 
 
 또 나만의 식단을 다른 사람들과 공유해보세요!
+
+#Noition 링크
+https://www.notion.so/Fit-Fighter-a6705a0f08a5458ca96910d4255ebcbf
 
